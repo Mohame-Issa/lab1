@@ -1,16 +1,11 @@
-# React + Vite
+# Software Project I - Practice Assignment 1: Filter & Search Todos
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Completed Features
+* **Backend (`todoController.js`)**: 
+  * Updated `getTodos` to read the `done` query parameter from `req.query`.
+  * Dynamically built a filter object (`filter.done = done === 'true'`) so that filtering is conditionally applied only when the query param is provided, preserving the default behavior when no filter is passed.
+* **Frontend API (`api/todos.js`)**:
+  * Updated `fetchTodos` to accept an optional filter argument and pass it securely as query parameters using Axios (`params: { done }`).
+* **UI & State Management (`App.jsx`)**:
+  * Added filter state (`'all'`, `'active'`, `'done'`) and hooked it up to a `useEffect` dependency array to re-fetch filtered todos whenever the user switches tabs.
+  * Created three interactive tab buttons (All, Active, Done) for seamless server-side filtering.
