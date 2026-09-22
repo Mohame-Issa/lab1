@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { fetchTodos } from './api/todos';
-import TodoList from './components/TodoList'; // Adjust path if your components are in a different folder
-import TodoForm from './components/TodoForm'; // Adjust path if needed
+import TodoList from './TodoList';
+import TodoForm from './TodoForm';
 
 function App() {
   const [todos, setTodos] = useState([]);
-  // a) State for current filter: 'all', 'active', or 'done'
+  // a) State for current filter: 'all', 'active', or 'done'[cite: 1]
   const [filter, setFilter] = useState('all');
 
-  // b) Re-run fetchTodos whenever the filter state changes
+  // b) Re-run fetchTodos whenever the filter state changes[cite: 1]
   useEffect(() => {
     const loadTodos = async () => {
       try {
@@ -34,7 +34,7 @@ function App() {
       {/* Todo Form for adding new todos */}
       <TodoForm setTodos={setTodos} />
 
-      {/* c) UI: Three simple buttons or tabs for filtering placed above the TodoList */}
+      {/* c) UI: Three simple buttons or tabs for filtering placed above the TodoList[cite: 1] */}
       <div style={{ display: 'flex', gap: '10px', margin: '20px 0' }}>
         <button 
           onClick={() => setFilter('all')} 
@@ -56,12 +56,10 @@ function App() {
         </button>
       </div>
 
-      {/* Your original Todo List component */}
+      {/* Todo List component */}
       <TodoList todos={todos} setTodos={setTodos} />
     </div>
   );
 }
-
-import './todo.css'; // Keep any existing CSS imports your app had
 
 export default App;
