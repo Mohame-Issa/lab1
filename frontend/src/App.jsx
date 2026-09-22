@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { fetchTodos } from './api/todos';
+import TodoList from './components/TodoList'; // Adjust path if your components are in a different folder
+import TodoForm from './components/TodoForm'; // Adjust path if needed
 
 function App() {
   const [todos, setTodos] = useState([]);
-  // a) Small piece of state for the current filter ('all', 'active', or 'done')
+  // a) State for current filter: 'all', 'active', or 'done'
   const [filter, setFilter] = useState('all');
 
-  // b) Re-run fetchTodos whenever the filter changes
+  // b) Re-run fetchTodos whenever the filter state changes
   useEffect(() => {
     const loadTodos = async () => {
       try {
@@ -16,7 +18,6 @@ function App() {
         else queryParam = undefined; // 'all'
 
         const data = await fetchTodos(queryParam);
-        // Handles standard backend response structure
         setTodos(Array.isArray(data) ? data : data.data || []);
       } catch (err) {
         console.error('Failed to load todos', err);
@@ -27,41 +28,40 @@ function App() {
   }, [filter]);
 
   return (
-    <div style={{ padding: '2rem', fontFamily: 'sans-serif', maxWidth: '500px', margin: 'auto' }}>
+    <div className="container" style={{ padding: '20px', maxWidth: '600px', margin: 'auto' }}>
       <h1>Todo App</h1>
 
-      {/* c) UI: Three simple buttons or a tab control */}
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+      {/* Todo Form for adding new todos */}
+      <TodoForm setTodos={setTodos} />
+
+      {/* c) UI: Three simple buttons or tabs for filtering placed above the TodoList */}
+      <div style={{ display: 'flex', gap: '10px', margin: '20px 0' }}>
         <button 
           onClick={() => setFilter('all')} 
-          style={{ fontWeight: filter === 'all' ? 'bold' : 'normal' }}
+          style={{ fontWeight: filter === 'all' ? 'bold' : 'normal', padding: '6px 12px' }}
         >
           All
         </button>
         <button 
           onClick={() => setFilter('active')} 
-          style={{ fontWeight: filter === 'active' ? 'bold' : 'normal' }}
+          style={{ fontWeight: filter === 'active' ? 'bold' : 'normal', padding: '6px 12px' }}
         >
           Active
         </button>
         <button 
           onClick={() => setFilter('done')} 
-          style={{ fontWeight: filter === 'done' ? 'bold' : 'normal' }}
+          style={{ fontWeight: filter === 'done' ? 'bold' : 'normal', padding: '6px 12px' }}
         >
           Done
         </button>
       </div>
 
-      {/* Todo List Display */}
-      <ul>
-        {todos.map((todo) => (
-          <li key={todo._id || todo.id} style={{ textDecoration: todo.done ? 'line-through' : 'none', marginBottom: '8px' }}>
-            {todo.title}
-          </li>
-        ))}
-      </ul>
+      {/* Your original Todo List component */}
+      <TodoList todos={todos} setTodos={setTodos} />
     </div>
   );
 }
+
+import './todo.css'; // Keep any existing CSS imports your app had
 
 export default App;
