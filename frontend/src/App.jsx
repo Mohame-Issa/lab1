@@ -1,63 +1,67 @@
-// App.jsx
-import { useState, useEffect } from 'react';
-import TodoForm from './TodoForm';
-import TodoList from './TodoList';
-import { fetchTodos, createTodo, updateTodo, deleteTodo } from './api/todos';
-import './todo.css';
+import React, { useState, useEffect } from 'react';
+import { fetchTodos } from './api/todos';
 
-const today = new Date().toLocaleDateString(undefined, {
-  weekday: 'long',
-  month: 'short',
-  day: 'numeric',
-});
-
-export default function App() {
+function App() {
   const [todos, setTodos] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // a) Small piece of state for the current filter ('all', 'active', or 'done')
+  const [filter, setFilter] = useState('all');
 
+  // b) Re-run fetchTodos whenever the filter changes
   useEffect(() => {
-    fetchTodos()
-      .then(data => { setTodos(data); setLoading(false); })
-      .catch(err => { console.error(err); setLoading(false); });
-  }, []);
+    const loadTodos = async () => {
+      try {
+        let queryParam;
+        if (filter === 'active') queryParam = false;
+        else if (filter === 'done') queryParam = true;
+        else queryParam = undefined; // 'all'
 
-  const handleAdd = async (title) => {
-    const newTodo = await createTodo(title);
-    setTodos([newTodo, ...todos]);
-  };
+        const data = await fetchTodos(queryParam);
+        // Handles standard backend response structure
+        setTodos(Array.isArray(data) ? data : data.data || []);
+      } catch (err) {
+        console.error('Failed to load todos', err);
+      }
+    };
 
-  const handleToggle = async (id, done) => {
-    const updated = await updateTodo(id, { done: !done });
-    setTodos(todos.map(t => t._id === id ? updated : t));
-  };
-
-  const handleRename = async (id, title) => {
-    const updated = await updateTodo(id, { title });
-    setTodos(todos.map(t => t._id === id ? updated : t));
-  };
-
-  const handleRemove = async (id) => {
-    await deleteTodo(id);
-    setTodos(todos.filter(t => t._id !== id));
-  };
+    loadTodos();
+  }, [filter]);
 
   return (
-    <div className="receipt-page">
-      <div className="receipt">
-        <header className="receipt-header">
-          <span className="stamp">Tasks</span>
-          <p className="receipt-date">{today}</p>
-        </header>
+    <div style={{ padding: '2rem', fontFamily: 'sans-serif', maxWidth: '500px', margin: 'auto' }}>
+      <h1>Todo App</h1>
 
-        <TodoForm onAdd={handleAdd} />
-        <TodoList
-          todos={todos}
-          loading={loading}
-          onToggle={handleToggle}
-          onRename={handleRename}
-          onRemove={handleRemove}
-        />
+      {/* c) UI: Three simple buttons or a tab control */}
+      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+        <button 
+          onClick={() => setFilter('all')} 
+          style={{ fontWeight: filter === 'all' ? 'bold' : 'normal' }}
+        >
+          All
+        </button>
+        <button 
+          onClick={() => setFilter('active')} 
+          style={{ fontWeight: filter === 'active' ? 'bold' : 'normal' }}
+        >
+          Active
+        </button>
+        <button 
+          onClick={() => setFilter('done')} 
+          style={{ fontWeight: filter === 'done' ? 'bold' : 'normal' }}
+        >
+          Done
+        </button>
       </div>
+
+      {/* Todo List Display */}
+      <ul>
+        {todos.map((todo) => (
+          <li key={todo._id || todo.id} style={{ textDecoration: todo.done ? 'line-through' : 'none', marginBottom: '8px' }}>
+            {todo.title}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
+
+export default App;

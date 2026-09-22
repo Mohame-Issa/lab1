@@ -1,17 +1,19 @@
-// api/todos.js
 import axios from 'axios';
 
-const api = axios.create({
-  baseURL: 'http://localhost:3000/api/todos'
-});
+export const fetchTodos = async (filter) => {
+  try {
+    let params = {};
+    
+    if (filter === true || filter === 'true') {
+      params.done = true;
+    } else if (filter === 'false' || filter === false) {
+      params.done = false;
+    }
 
-export const fetchTodos = () => api.get('/').then(res => res.data);
-
-export const createTodo = (title) =>
-  api.post('/', { title }).then(res => res.data);
-
-export const updateTodo = (id, updates) =>
-  api.put(`/${id}`, updates).then(res => res.data);
-
-export const deleteTodo = (id) =>
-  api.delete(`/${id}`).then(res => res.data);
+    const response = await axios.get('/api/todos', { params });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching todos:', error);
+    throw error;
+  }
+};
