@@ -1,20 +1,41 @@
-// TodoForm.jsx
 import { useState } from 'react';
 
-export default function TodoForm({ onAdd }) {
-  const [text, setText] = useState('');
+function TodoForm({ onAdd }) {
+  const [title, setTitle] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!text.trim()) return;
-    onAdd(text);
-    setText('');
+    const trimmed = title.trim();
+    if (!trimmed) return;
+    setSubmitting(true);
+    try {
+      await onAdd(trimmed);
+      setTitle('');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <form className="todo-form" onSubmit={handleSubmit}>
-      <input value={text} onChange={(e) => setText(e.target.value)} placeholder="Add a task..." />
-      <button type="submit">Add</button>
+      <input
+        className="todo-input"
+        type="text"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        placeholder="What needs to be done?"
+        aria-label="New todo title"
+      />
+      <button
+        type="submit"
+        className="btn-primary"
+        disabled={!title.trim() || submitting}
+      >
+        {submitting ? 'Adding…' : 'Add'}
+      </button>
     </form>
   );
 }
+
+export default TodoForm;

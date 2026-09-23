@@ -1,32 +1,45 @@
-// TodoList.jsx
-import TodoItem from './TodoItem';
+import TodoItem from './todoItem';
 
-export default function TodoList({ todos, loading, onToggle, onRename, onRemove }) {
-  if (loading) return <p className="todo-loading">Loading tasks…</p>;
+const EMPTY_MESSAGES = {
+  all: { title: 'No todos yet', text: 'Add your first task above to get started.' },
+  active: { title: 'All caught up', text: 'Nothing pending — nice work!' },
+  done: { title: 'Nothing completed yet', text: 'Finished tasks will show up here.' },
+};
 
-  if (todos.length === 0) {
-    return <p className="todo-empty">No tasks yet — add one above.</p>;
-  }
-
-  const doneCount = todos.filter(t => t.done).length;
-
-  return (
-    <>
-      <ul className="todo-list">
-        {todos.map(todo => (
-          <TodoItem
-            key={todo._id}
-            todo={todo}
-            onToggle={onToggle}
-            onRename={onRename}
-            onRemove={onRemove}
-          />
+function TodoList({ todos, loading, filter, onToggle, onDelete }) {
+  if (loading && todos.length === 0) {
+    return (
+      <ul className="todo-list" aria-busy="true">
+        {[1, 2, 3].map((n) => (
+          <li key={n} className="skeleton" />
         ))}
       </ul>
-      <div className="receipt-footer">
-        <span>{todos.length} item{todos.length === 1 ? '' : 's'}</span>
-        <span>{doneCount} of {todos.length} done</span>
+    );
+  }
+
+  if (todos.length === 0) {
+    const msg = EMPTY_MESSAGES[filter];
+    return (
+      <div className="empty">
+        <div className="empty-icon" aria-hidden="true">✓</div>
+        <p className="empty-title">{msg.title}</p>
+        <p className="empty-text">{msg.text}</p>
       </div>
-    </>
+    );
+  }
+
+  return (
+    <ul className={`todo-list ${loading ? 'is-refreshing' : ''}`}>
+      {todos.map((todo) => (
+        <TodoItem
+          key={todo._id}
+          todo={todo}
+          onToggle={onToggle}
+          onDelete={onDelete}
+        />
+      ))}
+    </ul>
   );
 }
+
+export default TodoList;

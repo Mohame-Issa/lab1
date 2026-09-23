@@ -1,40 +1,44 @@
-// TodoItem.jsx
-import { useState } from 'react';
-
-export default function TodoItem({ todo, onToggle, onRename, onRemove }) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [newTitle, setNewTitle] = useState(todo.title);
-
-  const handleSave = () => {
-    onRename(todo._id, newTitle);
-    setIsEditing(false);
-  };
-
+function TodoItem({ todo, onToggle, onDelete }) {
   return (
-    <li className="todo-item">
-      <input
-        className="todo-checkbox"
-        type="checkbox"
-        checked={todo.done}
-        onChange={() => onToggle(todo._id, todo.done)}
-      />
+    <li className={`todo-item ${todo.done ? 'is-done' : ''}`}>
+      <button
+        className="check"
+        onClick={() => onToggle(todo)}
+        aria-label={todo.done ? 'Mark as not done' : 'Mark as done'}
+      >
+        {todo.done && (
+          <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+            <path
+              d="M5 12.5l4.5 4.5L19 7.5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        )}
+      </button>
 
-      {isEditing ? (
-        <input
-          type="text"
-          value={newTitle}
-          onChange={(e) => setNewTitle(e.target.value)}
-          onBlur={handleSave}
-          autoFocus
-        />
-      ) : (
-        <span className={`todo-title${todo.done ? ' done' : ''}`}>{todo.title}</span>
-      )}
+      <span className="todo-title">{todo.title}</span>
 
-      <div className="todo-actions">
-        <button onClick={() => setIsEditing(!isEditing)}>{isEditing ? 'Save' : 'Edit'}</button>
-        <button className="remove-btn" onClick={() => onRemove(todo._id)}>Remove</button>
-      </div>
+      <button
+        className="btn-delete"
+        onClick={() => onDelete(todo._id)}
+        aria-label="Delete todo"
+      >
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+          <path
+            d="M6 6l12 12M18 6L6 18"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+          />
+        </svg>
+      </button>
     </li>
   );
 }
+
+export default TodoItem;
