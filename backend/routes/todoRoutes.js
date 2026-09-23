@@ -1,20 +1,15 @@
 const express = require('express');
-const router = express.Router();
-const { 
-  getTodos, 
-  createTodo, 
-  updateTodo, 
-  deleteTodo 
+const {
+  getTodos,
+  createTodo,
+  updateTodo,
+  deleteTodo,
 } = require('../controllers/todoController');
 
-// Map controllers to the base route ('/api/todos')
-router.route('/')
-  .get(getTodos)
-  .post(createTodo);
+const router = express.Router();
 
-// Map controllers to the dynamic ID route ('/api/todos/:id')
-router.route('/:id')
-  .put(updateTodo)
-  .delete(deleteTodo);
+// Query params (?done=true) travel on this same route, so no new route is needed
+router.route('/').get(getTodos).post(createTodo);
+router.route('/:id').put(updateTodo).delete(deleteTodo);
 
 module.exports = router;
